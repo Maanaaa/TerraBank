@@ -1,15 +1,13 @@
 package fr.mana.terrabank.loading;
 
-import fr.mana.terrabank.*;
-import fr.mana.terrabank.commands.bank.*;
-import fr.mana.terrabank.commands.plugin.*;
+import fr.mana.terrabank.commands.TerraBank;
 
 import java.util.*;
 
 public class PluginInitializer {
 
-    private TerraBank main;
-    public PluginInitializer(TerraBank main){
+    private fr.mana.terrabank.TerraBank main;
+    public PluginInitializer(fr.mana.terrabank.TerraBank main){
         this.main = main;
     }
 
@@ -19,11 +17,11 @@ public class PluginInitializer {
     public void initialize(){
         DatabaseManager databaseManager = new DatabaseManager(main);
         main.saveDefaultConfig();
+        main.reloadConfig();
         databaseManager.connect();
-        // Register /terrabank reload command
-        Objects.requireNonNull(main.getCommand("terrabank")).setExecutor(new Reload(main));
         // Register /terrabank give command
-        Objects.requireNonNull(main.getCommand("terrabank")).setExecutor(new GiveBanknote(main));
+        Objects.requireNonNull(main.getCommand("terrabank")).setExecutor(new TerraBank(main));
+        // Register collect money event
     }
 
 }
