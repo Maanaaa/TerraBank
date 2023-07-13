@@ -62,7 +62,7 @@ public class TerraBank implements CommandExecutor {
                 ItemMeta bankNoteMeta = bankNote.getItemMeta();
 
                 if (bankNoteMeta != null) {
-                    bankNoteMeta.setDisplayName(main.getConfig().getString("bankNote.display-name")
+                    bankNoteMeta.setLocalizedName(main.getConfig().getString("bankNote.display-name")
                             .replace("&", "§")
                             .replace("%value%", String.valueOf(amount)));
 
