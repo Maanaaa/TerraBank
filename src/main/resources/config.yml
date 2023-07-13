@@ -5,3 +5,12 @@ database:
   user:
   port:
   password:
+messages:
+  giveCommand:
+    invalidAmount: "&cError, invalid amount ! (Must be a number)"
+    success: "&bYou had gived &7%amount% &bto &7%player% !"
+bankNote:
+  item: PAPER
+  display-name: "&6BankNote %value%"
+  description:
+    - "§6Click to collect money !"

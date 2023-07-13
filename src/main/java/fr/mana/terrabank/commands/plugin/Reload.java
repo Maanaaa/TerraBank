@@ -1,4 +1,4 @@
-package fr.mana.terrabank.commands;
+package fr.mana.terrabank.commands.plugin;
 
 import fr.mana.terrabank.*;
 import org.bukkit.command.*;
