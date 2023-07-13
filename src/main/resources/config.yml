@@ -1,0 +1,6 @@
+# You have to connect TerraBank to the database of lightEconomy
+database:
+  name:
+  user:
+  port:
+  password:

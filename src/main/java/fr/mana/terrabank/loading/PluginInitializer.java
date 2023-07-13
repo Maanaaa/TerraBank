@@ -9,8 +9,11 @@ public class PluginInitializer {
         this.main = main;
     }
 
+
     public void register(){
+        DatabaseManager databaseManager = new DatabaseManager(main);
         main.saveDefaultConfig();
+        databaseManager.connect();
     }
 
 }
