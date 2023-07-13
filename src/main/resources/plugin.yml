@@ -7,3 +7,9 @@ softdepend: [lightEconomy, Vault]
 authors: [Mana]
 description: TerraBank is a fully customizable Minecraft Plugin of bank system (mainly banknotes) designed for TerraCraft.FR
 website: terracraft.fr
+commands:
+  terrabank:
+    permission: terrabank.use
+    aliases:
+      - tb
+      - bank
