@@ -1,0 +1,9 @@
+name: TerraBank
+version: '${project.version}'
+main: fr.mana.terrabank.TerraBank
+api-version: '1.20'
+prefix: TerraBank
+softdepend: [lightEconomy, Vault]
+authors: [Mana]
+description: TerraBank is a fully customizable Minecraft Plugin of bank system (mainly banknotes) designed for TerraCraft.FR
+website: terracraft.fr
