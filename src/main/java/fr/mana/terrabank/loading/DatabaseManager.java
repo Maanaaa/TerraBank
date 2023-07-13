@@ -17,7 +17,7 @@ public class DatabaseManager {
     public void connect() {
         String host = main.getConfig().getString("database.host");
         int port = main.getConfig().getInt("database.port");
-        String database = main.getConfig().getString("database.database");
+        String database = main.getConfig().getString("database.name");
 
         String jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database;
 
@@ -50,7 +50,7 @@ public class DatabaseManager {
     public Connection getConnection() throws SQLException {
         String host = main.getConfig().getString("database.host");
         int port = main.getConfig().getInt("database.port");
-        String database = main.getConfig().getString("database.database");
+        String database = main.getConfig().getString("database.name");
 
         String jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database;
 

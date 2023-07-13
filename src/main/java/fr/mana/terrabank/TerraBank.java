@@ -9,11 +9,11 @@ public final class TerraBank extends JavaPlugin {
     public void onEnable() {
         // Initialize plugin
         PluginInitializer pluginInitializer = new PluginInitializer(this);
-        pluginInitializer.register();
+        pluginInitializer.initialize();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        System.out.println("TerraBank disabled");
     }
 }

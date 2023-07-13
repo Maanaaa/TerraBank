@@ -10,7 +10,7 @@ public class PluginInitializer {
     }
 
 
-    public void register(){
+    public void initialize(){
         DatabaseManager databaseManager = new DatabaseManager(main);
         main.saveDefaultConfig();
         databaseManager.connect();
