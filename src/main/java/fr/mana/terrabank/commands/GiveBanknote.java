@@ -1,5 +1,6 @@
 package fr.mana.terrabank.commands;
 
+import fr.mana.terrabank.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -12,10 +13,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TerraBank implements CommandExecutor {
-    private fr.mana.terrabank.TerraBank main;
+public class GiveBanknote implements CommandExecutor {
+    private TerraBank main;
 
-    public TerraBank(fr.mana.terrabank.TerraBank main) {
+    public GiveBanknote(TerraBank main) {
         this.main = main;
     }
 
@@ -44,7 +45,8 @@ public class TerraBank implements CommandExecutor {
                     sender.sendMessage(line.replace("&","§"));
                 };
             }
-        }// Player uses /terrabank give <player> <amount> command
+        }
+        // Player uses /terrabank give <player> <amount> command
         else if (args.length == 3 && (args[0].equalsIgnoreCase("give") || args[0].equalsIgnoreCase("g"))) {
             Player target = Bukkit.getPlayer(args[1]);
             if (target != null) {
@@ -62,7 +64,7 @@ public class TerraBank implements CommandExecutor {
                 ItemMeta bankNoteMeta = bankNote.getItemMeta();
 
                 if (bankNoteMeta != null) {
-                    bankNoteMeta.setLocalizedName(main.getConfig().getString("bankNote.display-name")
+                    bankNoteMeta.setDisplayName(main.getConfig().getString("bankNote.display-name")
                             .replace("&", "§")
                             .replace("%value%", String.valueOf(amount)));
 

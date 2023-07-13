@@ -19,6 +19,6 @@ messages:
   collected: "§aYou have been collected %amount% !"
 bankNote:
   item: PAPER
-  display-name: "&6BankNote %value%"
+  display-name: "&6BankNote [%value%]"
   description:
     - "§6Click to collect money !"

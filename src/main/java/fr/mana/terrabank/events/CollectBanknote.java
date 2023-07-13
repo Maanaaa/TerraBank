@@ -1,17 +1,23 @@
 package fr.mana.terrabank.events;
 
-import fr.mana.terrabank.*;
-import org.bukkit.*;
-import org.bukkit.entity.*;
-import org.bukkit.event.*;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.*;
+import fr.mana.terrabank.TerraBank;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CollectBanknote implements Listener {
-    private TerraBank main;
+    private final TerraBank main;
+    private final Pattern amountPattern = Pattern.compile("\\[(\\d+)]"); // Recherche le montant entre crochets
+
     public CollectBanknote(TerraBank main) {
         this.main = main;
     }
@@ -20,26 +26,16 @@ public class CollectBanknote implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (event.hasItem() && Objects.requireNonNull(event.getItem()).getType() == Material.PAPER) {
+
             ItemStack item = event.getItem();
             ItemMeta meta = item.getItemMeta();
-            if (meta != null && meta.hasLocalizedName() && meta.hasLore()) {
-                String localizedName = meta.getLocalizedName();
-                List<String> lore = meta.getLore();
-                if (localizedName.replace("&", "§").startsWith("§9Billet de ") && lore != null && lore.get(0).equals("§7Cliquez pour réclamer le montant !")) {
-                    // Récupérer la valeur du montant à partir du localizedName
-                    String amountString = localizedName.substring(13);
+            if (meta != null && meta.hasDisplayName()) {
+                String displayName = meta.getDisplayName();
+                Matcher matcher = amountPattern.matcher(displayName);
+                if (matcher.find()) {
+                    String amountString = matcher.group(1);
                     double amount = Double.parseDouble(amountString);
 
-                    // Vérifier si le montant est valide
-                    if (Double.isNaN(amount)) {
-                        player.sendMessage("§cErreur, montant invalide !");
-                        return;
-                    }
-
-                    // Ajouter ici le code pour donner l'argent au joueur et retirer 1 papier
-                    // Utilisez les valeurs de votre fichier de configuration pour effectuer ces actions
-
-                    // Exemple :
                     String successMessage = main.getConfig().getString("messages.collected")
                             .replace("&", "§")
                             .replace("%amount%", String.valueOf(amount))
@@ -52,5 +48,4 @@ public class CollectBanknote implements Listener {
             }
         }
     }
-
 }
