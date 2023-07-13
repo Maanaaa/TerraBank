@@ -16,6 +16,7 @@ messages:
     - "&7&l>> &b/terrabank reload &7:reload configuration"
     - "&7&l>> &b/terrabank help &7:show this help page"
     - "&7-------------------------"
+  collected: "§aYou have been collected %amount% !"
 bankNote:
   item: PAPER
   display-name: "&6BankNote %value%"

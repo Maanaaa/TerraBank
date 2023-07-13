@@ -1,6 +1,7 @@
 package fr.mana.terrabank.loading;
 
 import fr.mana.terrabank.commands.TerraBank;
+import fr.mana.terrabank.events.*;
 
 import java.util.*;
 
@@ -22,6 +23,7 @@ public class PluginInitializer {
         // Register /terrabank give command
         Objects.requireNonNull(main.getCommand("terrabank")).setExecutor(new TerraBank(main));
         // Register collect money event
+        main.getServer().getPluginManager().registerEvents(new CollectBanknote(main), main);
     }
 
 }
