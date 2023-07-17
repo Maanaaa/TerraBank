@@ -1,6 +1,7 @@
 package fr.mana.terrabank.events;
 
 import fr.mana.terrabank.TerraBank;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,44 +9,90 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jdbi.v3.core.*;
 
-import java.util.List;
+import java.sql.*;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CollectBanknote implements Listener {
     private final TerraBank main;
-    private final Pattern amountPattern = Pattern.compile("\\[(\\d+)]"); // Recherche le montant entre crochets
+    private String keyWord;
+    private String material;
+    private String currencySymbol;
+    private final Pattern amountPattern;
 
     public CollectBanknote(TerraBank main) {
         this.main = main;
+        this.keyWord = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(main.getConfig().getString("bankNote.keyword")));
+        this.material = main.getConfig().getString("bankNote.item");
+        this.currencySymbol = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol")));
+        this.amountPattern = Pattern.compile(Pattern.quote(currencySymbol) + "(\\d+)");
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (event.hasItem() && Objects.requireNonNull(event.getItem()).getType() == Material.PAPER) {
+        ItemStack item = event.getItem();
 
-            ItemStack item = event.getItem();
+        if (item != null && item.getType() == Material.valueOf(material)) {
             ItemMeta meta = item.getItemMeta();
+
             if (meta != null && meta.hasDisplayName()) {
                 String displayName = meta.getDisplayName();
-                Matcher matcher = amountPattern.matcher(displayName);
-                if (matcher.find()) {
-                    String amountString = matcher.group(1);
-                    double amount = Double.parseDouble(amountString);
 
-                    String successMessage = main.getConfig().getString("messages.collected")
-                            .replace("&", "§")
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%player%", player.getName());
-                    player.sendMessage(successMessage);
+                if (displayName.contains(keyWord) && displayName.contains(currencySymbol)) {
+                    Matcher matcher = amountPattern.matcher(displayName);
 
-                    item.setAmount(item.getAmount() - 1);
-                    event.setCancelled(true);
+                    if (matcher.find()) {
+                        String amountString = matcher.group(1);
+                        double amount = Double.parseDouble(amountString);
+
+                        addMoney(player, amount);
+
+                        String successMessage = main.getConfig().getString("messages.collected")
+                                .replace("&", "§")
+                                .replace("%amount%", String.valueOf(amount))
+                                .replace("%player%", player.getName());
+                        player.sendMessage(successMessage);
+
+                        item.setAmount(item.getAmount() - 1);
+                        event.setCancelled(true);
+                    }
                 }
             }
         }
     }
+
+    public void addMoney(Player player, Double amount) {
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement("UPDATE MoneyTable SET money = money + ? WHERE name = ?")) {
+            statement.setDouble(1, amount);
+            statement.setString(2, player.getName());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Connection getConnection() throws SQLException {
+        String host = main.getConfig().getString("database.host");
+        int port = main.getConfig().getInt("database.port");
+        String database = main.getConfig().getString("database.name");
+
+        String jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database;
+
+        String username = main.getConfig().getString("database.user");
+        String password = main.getConfig().getString("database.password");
+
+        assert username != null;
+        assert password != null;
+
+        Jdbi jdbi = Jdbi.create(jdbcUrl, username, password);
+
+        return DriverManager.getConnection(jdbcUrl, username, password);
+    }
+
+
 }

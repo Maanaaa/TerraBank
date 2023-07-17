@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GiveBanknote implements CommandExecutor {
     private TerraBank main;
@@ -66,7 +65,9 @@ public class GiveBanknote implements CommandExecutor {
                 if (bankNoteMeta != null) {
                     bankNoteMeta.setDisplayName(main.getConfig().getString("bankNote.display-name")
                             .replace("&", "§")
-                            .replace("%value%", String.valueOf(amount)));
+                            .replace("%value%", String.valueOf(amount))
+                            .replace("%keyword%", Objects.requireNonNull(Objects.requireNonNull(main.getConfig().getString("bankNote.keyword")).replace("&","§")))
+                            .replace("%currencySymbol%", Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol"))));
 
                     List<String> description = main.getConfig().getStringList("bankNote.description");
                     List<String> lore = new ArrayList<>();
@@ -80,7 +81,9 @@ public class GiveBanknote implements CommandExecutor {
                     sender.sendMessage(main.getConfig().getString("messages.giveCommand.success")
                             .replace("&", "§")
                             .replace("%amount%", String.valueOf(amount))
-                            .replace("%player%", target.getName()));
+                            .replace("%player%", target.getName())
+                            .replace("%currencySymbol%", Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol")))
+                            .replace("%keyword%", Objects.requireNonNull(main.getConfig().getString("bankNote.keyword"))));
 
                     target.getInventory().addItem(bankNote);
                 }

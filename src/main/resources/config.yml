@@ -6,19 +6,22 @@ database:
   port:
   password:
 messages:
+  collected: "&aYou have been collected %amount%!"
   giveCommand:
-    invalidAmount: "&cError, invalid amount ! (Must be a number)"
-    success: "&bYou had gived &7%amount% &bto &7%player% !"
+    invalidAmount: "&cError, invalid amount! (Must be a number)"
+    success: "&bYou had given %amount% to %player%!"
   helpCommand:
     - "&7-------------------------"
     - "&6Bank Note Help"
     - "&7&l>> &b/terrabank give <player> <amount> &7: give bank note to player"
-    - "&7&l>> &b/terrabank reload &7:reload configuration"
-    - "&7&l>> &b/terrabank help &7:show this help page"
+    - "&7&l>> &b/terrabank reload &7: reload configuration"
+    - "&7&l>> &b/terrabank help &7: show this help page"
     - "&7-------------------------"
-  collected: "§aYou have been collected %amount% !"
+
 bankNote:
+  keyword: "&7Banknote"
+  currencySymbol: "$"
   item: PAPER
-  display-name: "&6BankNote [%value%]"
+  display-name: "%keyword% %currencySymbol%%value%"
   description:
-    - "§6Click to collect money !"
+    - "§6Click to collect money!"
