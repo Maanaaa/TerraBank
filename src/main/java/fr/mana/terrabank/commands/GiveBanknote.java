@@ -45,7 +45,7 @@ public class GiveBanknote implements CommandExecutor {
                 };
             }
         }
-        // Player uses /terrabank give <player> <amount> command
+
         else if (args.length == 3 && (args[0].equalsIgnoreCase("give") || args[0].equalsIgnoreCase("g"))) {
             Player target = Bukkit.getPlayer(args[1]);
             if (target != null) {
