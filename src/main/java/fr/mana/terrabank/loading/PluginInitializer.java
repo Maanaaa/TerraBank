@@ -22,9 +22,9 @@ public class PluginInitializer {
         main.saveDefaultConfig();
         main.reloadConfig();
         databaseManager.connect();
-        // Register /terrabank give command
+
         Objects.requireNonNull(main.getCommand("terrabank")).setExecutor(new GiveBanknote(main));
-        // Register collect money event
+
         main.getServer().getPluginManager().registerEvents(new CollectBanknote(main), main);
     }
 

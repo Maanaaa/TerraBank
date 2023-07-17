@@ -56,7 +56,7 @@ public class GiveBanknote implements CommandExecutor {
                     sender.sendMessage(main.getConfig().getString("messages.giveCommand.invalidAmount")
                             .replace("&", "§")
                             .replace("%amount%", args[2]));
-                    return true; // Return true to indicate successful command execution
+                    return true;
                 }
 
                 ItemStack bankNote = new ItemStack(Material.valueOf(main.getConfig().getString("bankNote.item")));
@@ -87,9 +87,9 @@ public class GiveBanknote implements CommandExecutor {
 
                     target.getInventory().addItem(bankNote);
                 }
-                return true; // Return true to indicate successful command execution
+                return true;
             }
         }
-        return false; // Return false if the command was not handled
+        return false;
     }
 }
