@@ -13,7 +13,7 @@ messages:
     - "&7-------------------------"
     - "&6Bank Note Help"
     - "&7&l>> &b/terrabank give <player> <amount> &7: give bank note to player"
-    - "&7&l>> &b/terrabank reload &7: reload configuration"
+    - "&7&l>> &b/terrabank reload &7: reload configuration" # Its recommanded to fully restart the server
     - "&7&l>> &b/terrabank help &7: show this help page"
     - "&7-------------------------"
 
