@@ -60,8 +60,6 @@ TerraBank include a right-click event to collect the banknote and add money to l
 
 
 
-For more details on each command and their usage, please refer to the plugin documentation.
-
 ## Support and Feedback
 
 If you encounter any issues or have any questions regarding TerraBank, please contact theo_maanaa on Discord for support. We appreciate your feedback and suggestions for improving the plugin.
