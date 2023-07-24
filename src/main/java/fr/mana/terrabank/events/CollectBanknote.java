@@ -61,7 +61,24 @@ public class CollectBanknote implements Listener {
                                 .replace("%player%", player.getName());
                         player.sendMessage(successMessage);
 
-                        item.setAmount(item.getAmount() - 1);
+                        // Check if there are more similar banknotes in the player's inventory and stack them
+                        ItemStack[] inventoryContents = player.getInventory().getContents();
+                        for (ItemStack stackItem : inventoryContents) {
+                            if (stackItem != null && stackItem.getType() == Material.valueOf(material)) {
+                                ItemMeta stackMeta = stackItem.getItemMeta();
+                                if (stackMeta != null && stackMeta.hasDisplayName()) {
+                                    String stackDisplayName = stackMeta.getDisplayName();
+                                    if (stackDisplayName.equals(displayName)) {
+                                        int stackAmount = stackItem.getAmount();
+                                        if (stackAmount > 1) {
+                                            stackItem.setAmount(stackAmount - 1);
+                                            item.setAmount(item.getAmount() - 1);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         event.setCancelled(true);
                     }
                 }
