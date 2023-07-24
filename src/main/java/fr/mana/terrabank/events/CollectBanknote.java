@@ -9,9 +9,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jdbi.v3.core.*;
+import org.jdbi.v3.core.Jdbi;
 
-import java.sql.*;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +32,7 @@ public class CollectBanknote implements Listener {
         this.keyWord = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(main.getConfig().getString("bankNote.keyword")));
         this.material = main.getConfig().getString("bankNote.item");
         this.currencySymbol = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol")));
-        this.amountPattern = Pattern.compile(Pattern.quote(currencySymbol) + "(\\d+)");
+        this.amountPattern = Pattern.compile(Pattern.quote(currencySymbol) + "(\\d+(\\.\\d{1,2})?)");
     }
 
     @EventHandler
@@ -47,7 +51,7 @@ public class CollectBanknote implements Listener {
 
                     if (matcher.find()) {
                         String amountString = matcher.group(1);
-                        double amount = Double.parseDouble(amountString);
+                        BigDecimal amount = new BigDecimal(amountString);
 
                         addMoney(player, amount);
 
@@ -65,10 +69,10 @@ public class CollectBanknote implements Listener {
         }
     }
 
-    public void addMoney(Player player, Double amount) {
+    public void addMoney(Player player, BigDecimal amount) {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement("UPDATE MoneyTable SET money = money + ? WHERE name = ?")) {
-            statement.setDouble(1, amount);
+            statement.setBigDecimal(1, amount);
             statement.setString(2, player.getName());
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -93,6 +97,4 @@ public class CollectBanknote implements Listener {
 
         return DriverManager.getConnection(jdbcUrl, username, password);
     }
-
-
 }
