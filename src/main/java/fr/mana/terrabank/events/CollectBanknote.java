@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,7 @@ public class CollectBanknote implements Listener {
     private String material;
     private String currencySymbol;
     private final Pattern amountPattern;
+    private HashMap<String, BigDecimal> banknotes;
 
     public CollectBanknote(TerraBank main) {
         this.main = main;
@@ -33,6 +35,7 @@ public class CollectBanknote implements Listener {
         this.material = main.getConfig().getString("bankNote.item");
         this.currencySymbol = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol")));
         this.amountPattern = Pattern.compile(Pattern.quote(currencySymbol) + "(\\d+(\\.\\d{1,2})?)");
+        this.banknotes = new HashMap<>();
     }
 
     @EventHandler
@@ -54,36 +57,42 @@ public class CollectBanknote implements Listener {
                         BigDecimal amount = new BigDecimal(amountString);
 
                         addMoney(player, amount);
-
-                        String successMessage = main.getConfig().getString("messages.collected")
-                                .replace("&", "§")
-                                .replace("%amount%", String.valueOf(amount))
-                                .replace("%player%", player.getName());
-                        player.sendMessage(successMessage);
-
-                        // Check if there are more similar banknotes in the player's inventory and stack them
-                        ItemStack[] inventoryContents = player.getInventory().getContents();
-                        for (ItemStack stackItem : inventoryContents) {
-                            if (stackItem != null && stackItem.getType() == Material.valueOf(material)) {
-                                ItemMeta stackMeta = stackItem.getItemMeta();
-                                if (stackMeta != null && stackMeta.hasDisplayName()) {
-                                    String stackDisplayName = stackMeta.getDisplayName();
-                                    if (stackDisplayName.equals(displayName)) {
-                                        int stackAmount = stackItem.getAmount();
-                                        if (stackAmount > 1) {
-                                            stackItem.setAmount(stackAmount - 1);
-                                            item.setAmount(item.getAmount() - 1);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        player.sendMessage(ChatColor.GREEN + "You collected " + amount + currencySymbol + "!");
                         event.setCancelled(true);
+
+                        // Check for existing banknote with the same value and stack them
+                        if (banknotes.containsKey(displayName)) {
+                            BigDecimal currentAmount = banknotes.get(displayName);
+                            banknotes.put(displayName, currentAmount.add(amount));
+                        } else {
+                            banknotes.put(displayName, amount);
+                        }
+
+                        // Remove the original banknote from the player's inventory
+                        item.setAmount(item.getAmount() - 1);
+                        player.updateInventory();
+
+                        // Give the stacked banknote back to the player
+                        ItemStack stackedBanknote = new ItemStack(Material.valueOf(material));
+                        ItemMeta stackedMeta = stackedBanknote.getItemMeta();
+                        String stackedDisplayName = keyWord + currencySymbol + getTotalAmountForDisplayName(displayName);
+                        stackedMeta.setDisplayName(stackedDisplayName);
+                        stackedBanknote.setItemMeta(stackedMeta);
+                        player.getInventory().addItem(stackedBanknote);
                     }
                 }
             }
         }
+    }
+
+    private BigDecimal getTotalAmountForDisplayName(String displayName) {
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (String key : banknotes.keySet()) {
+            if (key.contains(displayName)) {
+                totalAmount = totalAmount.add(banknotes.get(key));
+            }
+        }
+        return totalAmount;
     }
 
     public void addMoney(Player player, BigDecimal amount) {
