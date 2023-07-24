@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,7 @@ public class CollectBanknote implements Listener {
     private String material;
     private String currencySymbol;
     private final Pattern amountPattern;
+    private HashMap<BigDecimal, Integer> banknotes;
 
     public CollectBanknote(TerraBank main) {
         this.main = main;
@@ -33,6 +35,7 @@ public class CollectBanknote implements Listener {
         this.material = main.getConfig().getString("bankNote.item");
         this.currencySymbol = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol")));
         this.amountPattern = Pattern.compile(Pattern.quote(currencySymbol) + "(\\d+(\\.\\d{1,2})?)");
+        this.banknotes = new HashMap<>();
     }
 
     @EventHandler
@@ -53,41 +56,30 @@ public class CollectBanknote implements Listener {
                         String amountString = matcher.group(1);
                         BigDecimal amount = new BigDecimal(amountString);
 
-                        addMoney(player, amount);
+                        // Vérifier si un billet de même valeur existe déjà dans la banque de l'utilisateur
+                        int amountToAdd = item.getAmount();
+                        if (banknotes.containsKey(amount)) {
+                            int existingAmount = banknotes.get(amount);
+                            amountToAdd += existingAmount;
+                        }
+                        banknotes.put(amount, amountToAdd);
+
+                        addMoney(player, amount.multiply(BigDecimal.valueOf(item.getAmount())));
                         player.sendMessage(ChatColor.GREEN + "Vous avez collecté " + amount + currencySymbol + "!");
                         event.setCancelled(true);
 
-                        // Vérifier si d'autres billets de même type existent dans l'inventaire du joueur
-                        ItemStack[] inventoryContents = player.getInventory().getContents();
-                        BigDecimal totalAmount = amount;
-
-                        for (ItemStack stackItem : inventoryContents) {
-                            if (stackItem != null && stackItem.getType() == Material.valueOf(material) && stackItem != item) {
-                                ItemMeta stackMeta = stackItem.getItemMeta();
-                                if (stackMeta != null && stackMeta.hasDisplayName()) {
-                                    String stackDisplayName = stackMeta.getDisplayName();
-                                    Matcher stackMatcher = amountPattern.matcher(stackDisplayName);
-
-                                    if (stackMatcher.find()) {
-                                        String stackAmountString = stackMatcher.group(1);
-                                        BigDecimal stackAmount = new BigDecimal(stackAmountString);
-
-                                        totalAmount = totalAmount.add(stackAmount);
-
-                                        // Retirer le billet empilé de l'inventaire du joueur
-                                        stackItem.setAmount(0);
-                                    }
-                                }
-                            }
-                        }
+                        // Retirer le billet original de l'inventaire du joueur
+                        item.setAmount(0);
+                        player.getInventory().remove(item);
 
                         // Donner le nouveau billet avec la somme totale
-                        item.setAmount(1);
-                        ItemMeta stackedMeta = item.getItemMeta();
-                        String stackedDisplayName = keyWord + currencySymbol + totalAmount;
+                        ItemStack newBanknote = new ItemStack(Material.valueOf(material));
+                        newBanknote.setAmount(amountToAdd);
+                        ItemMeta stackedMeta = newBanknote.getItemMeta();
+                        String stackedDisplayName = keyWord + currencySymbol + (amount.multiply(BigDecimal.valueOf(amountToAdd)));
                         stackedMeta.setDisplayName(stackedDisplayName);
-                        item.setItemMeta(stackedMeta);
-                        player.getInventory().addItem(item);
+                        newBanknote.setItemMeta(stackedMeta);
+                        player.getInventory().addItem(newBanknote);
                     }
                 }
             }
