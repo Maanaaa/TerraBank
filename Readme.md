@@ -52,7 +52,7 @@ TerraBank provides the following commands:
       ![image](https://github.com/Maanaaa/TerraBank/assets/123769327/966985e6-6244-49dd-b861-47a3b7303e9d)
 
 ## Event
-TerraBank include a right-click event to collect the banknote and add money to lightEconomy database
+TerraBank include a right-click event to collect the banknote (with a stacking system) and add money to lightEconomy database
 
 ![image](https://github.com/Maanaaa/TerraBank/assets/123769327/46ec6974-aa8f-4205-b645-70b081c0139d)
 

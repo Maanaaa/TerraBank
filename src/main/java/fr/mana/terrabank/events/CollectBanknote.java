@@ -57,7 +57,7 @@ public class CollectBanknote implements Listener {
                         player.sendMessage(ChatColor.GREEN + "Vous avez collecté " + amount + currencySymbol + "!");
                         event.setCancelled(true);
 
-                        // Rechercher d'autres billets de même valeur dans l'inventaire du joueur et les empiler
+                        // Vérifier si d'autres billets de même type existent dans l'inventaire du joueur
                         ItemStack[] inventoryContents = player.getInventory().getContents();
                         BigDecimal totalAmount = amount;
 
@@ -81,7 +81,7 @@ public class CollectBanknote implements Listener {
                             }
                         }
 
-                        // Donner le billet empilé de retour au joueur avec la somme totale
+                        // Donner le nouveau billet avec la somme totale
                         item.setAmount(1);
                         ItemMeta stackedMeta = item.getItemMeta();
                         String stackedDisplayName = keyWord + currencySymbol + totalAmount;
