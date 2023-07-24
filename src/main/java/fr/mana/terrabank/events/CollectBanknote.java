@@ -56,26 +56,24 @@ public class CollectBanknote implements Listener {
                         String amountString = matcher.group(1);
                         BigDecimal amount = new BigDecimal(amountString);
 
-                        addMoney(player, amount);
-                        player.sendMessage(ChatColor.GREEN + "You collected " + amount + currencySymbol + "!");
-                        event.setCancelled(true);
-
-                        // Check for existing banknote with the same value and stack them
                         if (banknotes.containsKey(displayName)) {
                             BigDecimal currentAmount = banknotes.get(displayName);
-                            banknotes.put(displayName, currentAmount.add(amount));
+                            amount = amount.add(currentAmount);
+                            banknotes.put(displayName, amount);
                         } else {
                             banknotes.put(displayName, amount);
                         }
 
-                        // Remove the original banknote from the player's inventory
+                        addMoney(player, amount);
+                        player.sendMessage(ChatColor.GREEN + "Vous avez collecté " + amount + currencySymbol + "!");
+                        event.setCancelled(true);
+
                         item.setAmount(item.getAmount() - 1);
                         player.updateInventory();
 
-                        // Give the stacked banknote back to the player
                         ItemStack stackedBanknote = new ItemStack(Material.valueOf(material));
                         ItemMeta stackedMeta = stackedBanknote.getItemMeta();
-                        String stackedDisplayName = keyWord + currencySymbol + getTotalAmountForDisplayName(displayName);
+                        String stackedDisplayName = keyWord + currencySymbol + amount;
                         stackedMeta.setDisplayName(stackedDisplayName);
                         stackedBanknote.setItemMeta(stackedMeta);
                         player.getInventory().addItem(stackedBanknote);
@@ -83,16 +81,6 @@ public class CollectBanknote implements Listener {
                 }
             }
         }
-    }
-
-    private BigDecimal getTotalAmountForDisplayName(String displayName) {
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for (String key : banknotes.keySet()) {
-            if (key.contains(displayName)) {
-                totalAmount = totalAmount.add(banknotes.get(key));
-            }
-        }
-        return totalAmount;
     }
 
     public void addMoney(Player player, BigDecimal amount) {
