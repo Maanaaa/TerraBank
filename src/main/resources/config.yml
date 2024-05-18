@@ -14,14 +14,46 @@ messages:
     - "&6Bank Note Help"
     - "&7&l>> &b/terrabank give <player> <amount> &7: give bank note to player"
     - "&7&l>> &b/terrabank reload &7: reload configuration (not recommanded, prefer a server restart)" # Its recommanded to fully restart the server
+    - "&7&l>> &b/terrabank withdraw &7: the bank's withdraw menu"
     - "&7&l>> &b/terrabank help &7: show this help page"
     - "&7-------------------------"
 
 bankNote:
-  keyword: "&7Banknote"
-  currencySymbol: "$"
+  keyword: "&7Billet"
+  currencySymbol: "€"
   item: PAPER
-  display-name: "%keyword% %currencySymbol%%value%"
+  display-name: "%keyword% %value%%currencySymbol%"
   description:
-    - "§6Click to collect money!"
+    - "§6Clique droit pour encaisser"
+    - "&e&lATTENTION &cVous allez encaisser tout le paquet de billet !"
+    - "&cSéparez les si vous ne voulez pas tout encaisser."
 
+
+withdraw:
+  menu:
+    maximum-withdraw:
+    title: "           &e&l⚡ &bBANQUE &e&l⚡        "
+    rows: 1
+    items:
+      decoration:
+        event: $deco
+        material: "BLUE_STAINED_GLASS_PANE"
+        name: ""
+        slot:
+          - 0
+          - 1
+          - 2
+          - 4
+          - 5
+          - 7
+          - 8
+      withdraw:
+        event: $withdraw
+        material: "DISPENSER"
+        slot:
+          - 3
+        name: "&b&l>> Retirer de l'argent"
+        lore:
+          - "&7Retire de l'argent pour notamment"
+          - "&7acheter aux villageois du marché"
+          - "&7ou échanger avec nimporte qui !"

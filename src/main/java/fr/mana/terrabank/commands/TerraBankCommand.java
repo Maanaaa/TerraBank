@@ -2,20 +2,23 @@ package fr.mana.terrabank.commands;
 
 import fr.mana.terrabank.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
-public class GiveBanknote implements CommandExecutor {
+public class TerraBankCommand implements CommandExecutor {
     private TerraBank main;
 
-    public GiveBanknote(TerraBank main) {
+    public TerraBankCommand(TerraBank main) {
         this.main = main;
     }
 
@@ -27,17 +30,23 @@ public class GiveBanknote implements CommandExecutor {
             for (String line : message) {
                 sender.sendMessage(line.replace("&","§"));
             };
-        }else if(args.length == 1){
+        }if(args.length == 1){
             if(args[0].equalsIgnoreCase("") || args[0].equalsIgnoreCase("help")){
                 List<String> message = main.getConfig().getStringList("messages.helpCommand");
                 for (String line : message) {
                     sender.sendMessage(line.replace("&","§"));
                 };
-            }else if(args[0].equalsIgnoreCase("reload")){
+            }else if(args[0].equalsIgnoreCase("reload")) {
                 main.reloadConfig();
                 sender.sendMessage("§6§lTerraBank configuration reloaded !");
+            }else if (args[0].equalsIgnoreCase("withdraw")){
+                Player player = (Player) sender;
+                Inventory inventory = Bukkit.createInventory(null, main.getConfig().getInt("withdraw.menu.rows")*9, ChatColor.translateAlternateColorCodes('&',
+                        Objects.requireNonNull(main.getConfig().getString("withdraw.menu.title"))));
+                registerItems(player, inventory);
+                player.openInventory(inventory);
             }
-        }else if(args.length == 2){
+        }if(args.length == 2){
             if(args[1].equalsIgnoreCase("")){
                 List<String> message = main.getConfig().getStringList("messages.helpCommand");
                 for (String line : message) {
@@ -91,5 +100,45 @@ public class GiveBanknote implements CommandExecutor {
             }
         }
         return false;
+    }
+
+    public void newItem(Player player, Inventory inventory, String material, String name, List<String> description, List<Integer> slots){
+        ItemStack item;
+        item = new ItemStack(Material.valueOf(material));
+
+        ItemMeta itemMeta;
+        itemMeta = item.getItemMeta();
+
+        assert itemMeta != null;
+
+        itemMeta.setDisplayName(name);
+
+        List<String> replacedDescription = new ArrayList<>();
+        for (String line : description){
+            line = line.replace("&","§");
+            line = line.replace("%player%", player.getDisplayName());
+            replacedDescription.add(line);
+        }
+        itemMeta.setLore(replacedDescription);
+        item.setItemMeta(itemMeta);
+
+        for (int slot : slots){
+            inventory.setItem(slot, item);
+        }
+    }
+
+    public void registerItems(Player player, Inventory inventory){
+        ConfigurationSection itemsSection = main.getConfig().getConfigurationSection("withdraw.menu.items");
+
+        assert itemsSection != null;
+        for (String key : itemsSection.getKeys(false)){
+            String material = main.getConfig().getString("withdraw.menu.items."+key+".material");
+            String name = main.getConfig().getString("withdraw.menu.items."+key+".name").replace("&","§");
+            List<String> description = main.getConfig().getStringList("withdraw.menu.items."+key+".lore");
+            List<Integer> slots = main.getConfig().getIntegerList("withdraw.menu.items."+key+".slot");
+
+            newItem(player, inventory, material, name, description, slots);
+        }
+
     }
 }
