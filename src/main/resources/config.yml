@@ -30,28 +30,44 @@ bankNote:
 
 
 withdraw:
+  messages:
+    enterAmount:
+      - "&eVeuillez entrer un montant "
+      - "&eou tapez &e&l0 &epour annuler !"
+    enterNumber:
+      - "&eCombien de billet(s) de &7%enteredAmount% &esouhaitez-vous ? &c&l(Nombre entier)"
+      - "&eOu tapez &e&l0 &epour annuler !"
+    invalidAmount: "&cTransaction annulée, montant invalide. "
+    invalidNumber: "&cTransaction annulée, nombre invalide. "
+    notEnoughMoney: "&cVous n'avez pas assez d'argent !"
+    received: "&aVous avez reçu %number% billet(s) de %amount% !"
   menu:
-    maximum-withdraw:
     title: "           &e&l⚡ &bBANQUE &e&l⚡        "
     rows: 1
     items:
       decoration:
-        event: $deco
+        event: $decoration
         material: "BLUE_STAINED_GLASS_PANE"
         name: ""
         slot:
           - 0
           - 1
           - 2
-          - 4
+          - 3
           - 5
+          - 6
           - 7
+      close:
+        event: $close
+        material: "RED_STAINED_GLASS_PANE"
+        name: "&cFermer le menu"
+        slot:
           - 8
       withdraw:
         event: $withdraw
-        material: "DISPENSER"
+        material: "PAPER"
         slot:
-          - 3
+          - 4
         name: "&b&l>> Retirer de l'argent"
         lore:
           - "&7Retire de l'argent pour notamment"

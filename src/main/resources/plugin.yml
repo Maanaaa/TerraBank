@@ -13,3 +13,4 @@ commands:
     aliases:
       - tb
       - bank
+  withdraw:

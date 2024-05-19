@@ -39,8 +39,10 @@ public class TerraBankCommand implements CommandExecutor {
             }else if(args[0].equalsIgnoreCase("reload")) {
                 main.reloadConfig();
                 sender.sendMessage("§6§lTerraBank configuration reloaded !");
-            }else if (args[0].equalsIgnoreCase("withdraw")){
+            }
+            else if (args[0].equalsIgnoreCase("withdraw")){
                 Player player = (Player) sender;
+
                 Inventory inventory = Bukkit.createInventory(null, main.getConfig().getInt("withdraw.menu.rows")*9, ChatColor.translateAlternateColorCodes('&',
                         Objects.requireNonNull(main.getConfig().getString("withdraw.menu.title"))));
                 registerItems(player, inventory);
