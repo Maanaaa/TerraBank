@@ -19,6 +19,7 @@ public class PluginInitializer {
         databaseManager.connect();
 
         Objects.requireNonNull(main.getCommand("terrabank")).setExecutor(new TerraBankCommand(main));
+        Objects.requireNonNull(main.getCommand("withdraw")).setExecutor(new WithdrawCommand());
 
         Withdraw withdraw = new Withdraw(main);
         main.getServer().getPluginManager().registerEvents(new CollectBanknote(main), main);

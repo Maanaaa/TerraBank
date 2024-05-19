@@ -26,19 +26,28 @@ public class TerraBankCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         if(args.length == 0){
-            List<String> message = main.getConfig().getStringList("messages.helpCommand");
-            for (String line : message) {
-                sender.sendMessage(line.replace("&","§"));
-            };
-        }if(args.length == 1){
-            if(args[0].equalsIgnoreCase("") || args[0].equalsIgnoreCase("help")){
+            if(sender.hasPermission("terrabank.use")){
                 List<String> message = main.getConfig().getStringList("messages.helpCommand");
                 for (String line : message) {
                     sender.sendMessage(line.replace("&","§"));
                 };
+            }
+
+        }if(args.length == 1){
+            if(args[0].equalsIgnoreCase("") || args[0].equalsIgnoreCase("help")){
+                if (sender.hasPermission("terrabank.use")){
+                    List<String> message = main.getConfig().getStringList("messages.helpCommand");
+                    for (String line : message) {
+                        sender.sendMessage(line.replace("&","§"));
+                    };
+                }
+
             }else if(args[0].equalsIgnoreCase("reload")) {
-                main.reloadConfig();
-                sender.sendMessage("§6§lTerraBank configuration reloaded !");
+                if (sender.hasPermission("terrabank.use")){
+                    main.reloadConfig();
+                    sender.sendMessage("§6§lTerraBank configuration reloaded !");
+                }
+
             }
             else if (args[0].equalsIgnoreCase("withdraw")){
                 Player player = (Player) sender;
@@ -50,56 +59,62 @@ public class TerraBankCommand implements CommandExecutor {
             }
         }if(args.length == 2){
             if(args[1].equalsIgnoreCase("")){
-                List<String> message = main.getConfig().getStringList("messages.helpCommand");
-                for (String line : message) {
-                    sender.sendMessage(line.replace("&","§"));
-                };
+                if (sender.hasPermission("terrabank.use")){
+                    List<String> message = main.getConfig().getStringList("messages.helpCommand");
+                    for (String line : message) {
+                        sender.sendMessage(line.replace("&","§"));
+                    };
+                }
+
             }
         }
 
         else if (args.length == 3 && (args[0].equalsIgnoreCase("give") || args[0].equalsIgnoreCase("g"))) {
-            Player target = Bukkit.getPlayer(args[1]);
-            if (target != null) {
-                double amount;
-                try {
-                    amount = Double.parseDouble(args[2]);
-                } catch (NumberFormatException e) {
-                    sender.sendMessage(main.getConfig().getString("messages.giveCommand.invalidAmount")
-                            .replace("&", "§")
-                            .replace("%amount%", args[2]));
-                    return true;
-                }
-
-                ItemStack bankNote = new ItemStack(Material.valueOf(main.getConfig().getString("bankNote.item")));
-                ItemMeta bankNoteMeta = bankNote.getItemMeta();
-
-                if (bankNoteMeta != null) {
-                    bankNoteMeta.setDisplayName(main.getConfig().getString("bankNote.display-name")
-                            .replace("&", "§")
-                            .replace("%value%", String.valueOf(amount))
-                            .replace("%keyword%", Objects.requireNonNull(Objects.requireNonNull(main.getConfig().getString("bankNote.keyword")).replace("&","§")))
-                            .replace("%currencySymbol%", Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol"))));
-
-                    List<String> description = main.getConfig().getStringList("bankNote.description");
-                    List<String> lore = new ArrayList<>();
-                    for (String line : description) {
-                        lore.add(line.replace("&", "§"));
+            if (sender.hasPermission("terrabank.use")){
+                Player target = Bukkit.getPlayer(args[1]);
+                if (target != null) {
+                    double amount;
+                    try {
+                        amount = Double.parseDouble(args[2]);
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(main.getConfig().getString("messages.giveCommand.invalidAmount")
+                                .replace("&", "§")
+                                .replace("%amount%", args[2]));
+                        return true;
                     }
 
-                    bankNoteMeta.setLore(lore);
-                    bankNote.setItemMeta(bankNoteMeta);
+                    ItemStack bankNote = new ItemStack(Material.valueOf(main.getConfig().getString("bankNote.item")));
+                    ItemMeta bankNoteMeta = bankNote.getItemMeta();
 
-                    sender.sendMessage(main.getConfig().getString("messages.giveCommand.success")
-                            .replace("&", "§")
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%player%", target.getName())
-                            .replace("%currencySymbol%", Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol")))
-                            .replace("%keyword%", Objects.requireNonNull(main.getConfig().getString("bankNote.keyword"))));
+                    if (bankNoteMeta != null) {
+                        bankNoteMeta.setDisplayName(main.getConfig().getString("bankNote.display-name")
+                                .replace("&", "§")
+                                .replace("%value%", String.valueOf(amount))
+                                .replace("%keyword%", Objects.requireNonNull(Objects.requireNonNull(main.getConfig().getString("bankNote.keyword")).replace("&","§")))
+                                .replace("%currencySymbol%", Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol"))));
 
-                    target.getInventory().addItem(bankNote);
+                        List<String> description = main.getConfig().getStringList("bankNote.description");
+                        List<String> lore = new ArrayList<>();
+                        for (String line : description) {
+                            lore.add(line.replace("&", "§"));
+                        }
+
+                        bankNoteMeta.setLore(lore);
+                        bankNote.setItemMeta(bankNoteMeta);
+
+                        sender.sendMessage(main.getConfig().getString("messages.giveCommand.success")
+                                .replace("&", "§")
+                                .replace("%amount%", String.valueOf(amount))
+                                .replace("%player%", target.getName())
+                                .replace("%currencySymbol%", Objects.requireNonNull(main.getConfig().getString("bankNote.currencySymbol")))
+                                .replace("%keyword%", Objects.requireNonNull(main.getConfig().getString("bankNote.keyword"))));
+
+                        target.getInventory().addItem(bankNote);
+                    }
+                    return true;
                 }
-                return true;
             }
+
         }
         return false;
     }

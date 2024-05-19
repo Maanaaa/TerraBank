@@ -9,8 +9,9 @@ description: TerraBank is a fully customizable Minecraft Plugin of bank system (
 website: terracraft.fr
 commands:
   terrabank:
-    permission: terrabank.use
     aliases:
       - tb
       - bank
   withdraw:
+    aliases:
+      - retirer

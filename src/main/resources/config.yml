@@ -35,7 +35,7 @@ withdraw:
       - "&eVeuillez entrer un montant "
       - "&eou tapez &e&l0 &epour annuler !"
     enterNumber:
-      - "&eCombien de billet(s) de &7%enteredAmount% &esouhaitez-vous ? &c&l(Nombre entier)"
+      - "&eCombien de billet(s) de &7%enteredAmount%€ &esouhaitez-vous ? &c&l(Nombre entier)"
       - "&eOu tapez &e&l0 &epour annuler !"
     invalidAmount: "&cTransaction annulée, montant invalide. "
     invalidNumber: "&cTransaction annulée, nombre invalide. "
