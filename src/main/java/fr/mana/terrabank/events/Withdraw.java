@@ -182,6 +182,7 @@ public class Withdraw implements Listener {
     }
 
     private void givePlayerMoney(Player player, Float amount, Integer number){
+        player.updateInventory();
         ItemStack bankNote = new ItemStack(Material.valueOf(main.getConfig().getString("bankNote.item")), number);
         ItemMeta bankNoteMeta = bankNote.getItemMeta();
 
@@ -202,6 +203,7 @@ public class Withdraw implements Listener {
             bankNote.setItemMeta(bankNoteMeta);
 
             player.getInventory().addItem(bankNote);
+            player.updateInventory();
         }
         player.sendMessage(Objects.requireNonNull(main.getConfig().getString("withdraw.messages.received")).replace("&","§").replace("%amount%", amount.toString()).replace("%number%", number.toString()));
     }
